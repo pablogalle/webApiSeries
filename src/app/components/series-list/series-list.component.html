@@ -1,0 +1,171 @@
+<div class="container-fluid">
+
+  <div class="w-100 d-flex">
+    <h3 class="my-2 d-inline-block me-auto">{{series.length}}
+      series</h3>
+
+    <button data-text="Awesome" class="d-inline-block ms-auto my-2 button scene"
+            (click)="newSerie()"
+            data-bs-toggle="modal"
+            data-bs-target="#miModal">
+      <span class="actual-text">&nbsp;+Serie&nbsp;</span>
+      <span class="hover-text" aria-hidden="true">&nbsp;+Serie&nbsp;</span>
+    </button>
+
+  </div>
+
+  <div class="container"
+       *ngFor="let serie of series">
+    <div class="row border rounded">
+      <div class="col-md-11">
+        <div (click)="loadSerie(serie)" data-bs-toggle="modal"
+             data-bs-target="#miModal" class="row mt-3 pt-2">
+          <div class="col-md-2">
+            <img class="w-100" src="{{serie.images[0] || 'assets/images/no-image-icon.jpg'}}" alt="{{serie.title}}">
+          </div>
+          <div class="col-md-9">
+            <h5>{{serie.title}}</h5>
+            <small class="text-danger" *ngFor="let genre of serie.genres">{{genre.name}} </small>
+            <p><b>Year</b>:{{serie.year_of_emision}}</p>
+            <small>{{serie.synopsis}}</small>
+          </div>
+
+          <div class="col-md-1 align-self-center align-middle">
+            <small class="badge bg-success p-3">{{getAvgScoreSerie(serie)}}</small>
+          </div>
+
+          <div class="pb-2"></div>
+        </div>
+      </div>
+
+      <div class="col-md-1 remove d-flex">
+        <h3 class="ms-auto align-self-center">
+          <i (click)="removeSerie(serie)"
+             class="fas fa-times"></i></h3>
+      </div>
+    </div>
+
+    <div class="mb-2"></div>
+
+    <!-- Fin del NgFor -->
+    <!-- Modal -->
+    <div class="modal fade" id="miModal"
+         tabindex="-1" aria-labelledby="miModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="miModalLabel">
+              {{editar ? title : 'New Series'}}</h5>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+
+          </div>
+          <form [formGroup]="formSerie" (ngSubmit)="onSubmit()">
+            <div class="modal-body">
+              <div class="form-floating mb-3">
+                <input formControlName="title"
+                       type="text" class="form-control"
+                       id="title" value="{{title}}"
+                       placeholder="Title">
+                <label for="title">
+                  Title</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input formControlName="year_of_emision"
+                       type="number" class="form-control"
+                       id="yearOfEmission" value="{{yearOfEmission}}"
+                       placeholder="Year">
+                <label for="yearOfEmission">
+                  Year of emission</label>
+              </div>
+              <div class="row">
+                <div class="col-8">
+                  <div class="form-floating mb-3">
+                    <input formControlName="images"
+                           type="text" class="form-control"
+                           id="images" value="{{imagesSerie}}"
+                           placeholder="images">
+                    <label for="images"> Images</label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <img src="{{imagesSerie || 'assets/images/no-image-icon.jpg'}}" alt="...">
+                </div>
+              </div>
+              <div class="form-floating mb-3 mt-3">
+              <textarea formControlName="synopsis"
+                        rows="7"
+                        class="form-control"
+                        id="synopsis" value="{{synopsis}}"
+                        placeholder="synopsis">
+              </textarea>
+                <label for="synopsis">
+                  Synopsis</label>
+              </div>
+              <!-- select genres -->
+              <div *ngIf="editar">
+                <label for="Select">Genres</label>
+                <select class="form-select" id="Select" aria-label="Genres" multiple formControlName="genres">
+                  <option *ngFor="let gen of genres"
+                          [value]="gen.name">
+                    {{gen.name}}</option>
+                </select>
+              </div>
+              <div *ngIf="!editar">
+                <label for="newSelect">Genres</label>
+                <select class="form-select" id="newSelect"
+                        aria-label="Genres" multiple
+                        formControlName="genres">
+                  <option *ngFor="let gen of genres"
+                          [value]="gen.name">
+                    {{gen.name}}</option>
+                </select>
+              </div>
+
+              <!-- Add New Genre -->
+              <div class="row mt-3">
+                <div class="col-8" [formGroup]="mynewGenre">
+                  <div class="row">
+                    <div class="form-floating mb-3">
+                      <input class="form-control"
+                             id="name" type="text"
+                             formControlName="name" value="{{nameGenre}}"
+                             placeholder="New Genre Name">
+                      <label for="name">New Genre Name</label>
+                    </div>
+                    <div class="row">
+                      <div class="col-8">
+                        <div class="form-floating mb-3">
+                          <input formControlName="image"
+                                 type="text" class="form-control"
+                                 id="image" value="{{imageGenre}}"
+                                 placeholder="Image for New Genre">
+                          <label for="image"> Image for New Genre</label>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <img src="{{imageGenre || 'assets/images/no-image-icon.jpg'}}" alt="...">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mt-2">
+                  <h3><i class="fas fa-plus-circle pointer" (click)="addNewGenre(nameGenre, imageGenre)"></i></h3>
+                </div>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
